@@ -1,13 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import { useDropzone } from 'react-dropzone';
 import SheetPicker from './SheetPicker';
 import type { SheetMap, SheetData } from '../types';
 
-export default function FileUpload() {
+interface FileUploadProps {
+  onParse?: (sheets: SheetMap) => void;
+}
+
+export default function FileUpload({ onParse }: FileUploadProps) {
   const [sheets, setSheets] = useState<SheetMap>({});
   const router = useRouter();
 
@@ -26,6 +30,7 @@ export default function FileUpload() {
       });
 
       setSheets(parsed);
+      onParse?.(parsed); // <-- Kirim hasil parsing ke parent (optional)
     };
 
     reader.readAsArrayBuffer(file);
