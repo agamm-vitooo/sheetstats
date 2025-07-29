@@ -4,7 +4,7 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 interface Props {
-  data: any[];
+  data: (string | number | null)[];
 }
 
 export default function BarChart({ data }: Props) {

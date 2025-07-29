@@ -1,6 +1,6 @@
 interface Props {
-  sheets: Record<string, any[][]>;
-  onPick: (data: any[][]) => void;
+  sheets: Record<string, (string | number | null)[][]>;
+  onPick: (data: (string | number | null)[][]) => void;
 }
 
 export default function SheetPicker({ sheets, onPick }: Props) {

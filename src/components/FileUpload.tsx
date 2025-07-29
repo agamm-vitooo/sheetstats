@@ -7,7 +7,7 @@ import { useDropzone } from 'react-dropzone';
 import SheetPicker from './SheetPicker';
 
 export default function FileUpload() {
-  const [sheets, setSheets] = useState<Record<string, any[][]>>({});
+  const [sheets, setSheets] = useState<Record<string, (string | number | null)[][]>>({});
   const router = useRouter();
 
   const onDrop = (acceptedFiles: File[]) => {
