@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import { useDropzone } from 'react-dropzone';
 import SheetPicker from './SheetPicker';
+import type { SheetMap, SheetData } from '../types';
 
 export default function FileUpload() {
-  const [sheets, setSheets] = useState<Record<string, (string | number | null)[][]>>({});
+  const [sheets, setSheets] = useState<SheetMap>({});
   const router = useRouter();
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -19,9 +20,9 @@ export default function FileUpload() {
       const data = e.target?.result;
       const workbook = XLSX.read(data, { type: 'array' });
 
-      const parsed: Record<string, any[][]> = {};
+      const parsed: SheetMap = {};
       workbook.SheetNames.forEach((name) => {
-        parsed[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1 });
+        parsed[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1 }) as SheetData;
       });
 
       setSheets(parsed);
@@ -38,14 +39,14 @@ export default function FileUpload() {
     },
   });
 
-  const handlePick = async (data: any[][]) => {
+  const handlePick = async (data: SheetData) => {
     const store = await import('../stores/dataStore');
     store.useDataStore.getState().setSheets({ SelectedSheet: data });
     router.push('/charts');
   };
 
   return (
-    <div className=" flex flex-col items-center justify-center px-4 bg-gray-100">
+    <div className="flex flex-col items-center justify-center px-4 bg-gray-100">
       <div
         {...getRootProps()}
         className="w-full max-w-lg border border-gray-300 bg-white rounded-lg p-8 text-center shadow hover:shadow-md transition"

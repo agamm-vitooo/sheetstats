@@ -5,10 +5,11 @@ import PieChart from './PieChart';
 import BarChart from './BarChart';
 import LineChart from './LineChart';
 import ChartSelector from './ChartSelector';
+import type { SheetData } from '../../types';
 
 interface Props {
   headers: string[];
-  rows: any[][];
+  rows: SheetData;
   defaultCol?: string;
 }
 

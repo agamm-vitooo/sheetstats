@@ -1,8 +1,10 @@
+'use client';
 import { create } from 'zustand';
+import type { SheetMap } from '../types';
 
 interface DataStore {
-  sheets: Record<string, any[][]>;
-  setSheets: (sheets: Record<string, any[][]>) => void;
+  sheets: SheetMap;
+  setSheets: (sheets: SheetMap) => void;
 }
 
 export const useDataStore = create<DataStore>((set) => ({

@@ -1,6 +1,8 @@
+import type { SheetMap, SheetData } from '../types';
+
 interface Props {
-  sheets: Record<string, (string | number | null)[][]>;
-  onPick: (data: (string | number | null)[][]) => void;
+  sheets: SheetMap;
+  onPick: (data: SheetData) => void;
 }
 
 export default function SheetPicker({ sheets, onPick }: Props) {
