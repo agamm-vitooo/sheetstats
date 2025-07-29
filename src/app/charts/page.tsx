@@ -11,21 +11,20 @@ export default function ChartsPage() {
   }
 
   const data = sheets.SelectedSheet;
-  const headers = data[0];
+  const rawHeaders = data[0];
   const rows = data.slice(1);
+
+  // ⛑️ Filter agar hanya string
+  const headers = rawHeaders.filter((h): h is string => typeof h === 'string');
 
   return (
     <div className="p-6 text-black min-h-screen bg-gray-50">
       <h1 className="text-2xl font-bold mb-6 text-center">📈 Visualisasi Sheet Terpilih</h1>
 
-      {/* Grid 2 kolom */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ChartSection headers={headers} rows={rows} defaultCol="Incident" />
-        <ChartSection headers={headers} rows={rows} defaultCol="Unit Level 1" />
-        <ChartSection headers={headers} rows={rows} defaultCol="Unit Level 2" />
-        <ChartSection headers={headers} rows={rows} defaultCol="Task Assign To" />
-        {/* Tambah ChartSection lain sesuai kolom */}
-        {/* <ChartSection headers={headers} rows={rows} defaultCol="Service Group" /> */}
+        {['Incident', 'Unit Level 1', 'Unit Level 2', 'Task Assign To'].map((col) => (
+          <ChartSection key={col} headers={headers} rows={rows} defaultCol={col} />
+        ))}
       </div>
     </div>
   );
