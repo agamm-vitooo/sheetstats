@@ -5,14 +5,15 @@ import { useRef, useState } from 'react';
 import FileUpload from '../components/FileUpload';
 import SheetPicker from '../components/SheetPicker';
 import { useDataStore } from '../stores/dataStore';
+import type { SheetMap, SheetData } from '../types';
 
 export default function Home() {
-  const [sheets, setSheets] = useState<Record<string, any[][]>>({});
+  const [sheets, setSheets] = useState<SheetMap>({});
   const headerRef = useRef<HTMLDivElement>(null);
   const { setData } = useDataStore();
   const router = useRouter();
 
-  const handleSheetPick = (data: any[][]) => {
+  const handleSheetPick = (data: SheetData) => {
     const [headerRow, ...rows] = data;
 
     setData(headerRow, rows);

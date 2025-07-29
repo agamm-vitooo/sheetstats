@@ -1,10 +1,11 @@
 'use client';
 
 import ChartSection from './index';
+import type { SheetCell } from '../../types';
 
 interface Props {
   headers: string[];
-  rows: any[][];
+  rows: SheetCell[][];
 }
 
 export default function ChartGrid({ headers, rows }: Props) {
