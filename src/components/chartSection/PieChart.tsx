@@ -8,15 +8,16 @@ interface Props {
 }
 
 export default function PieChart({ data }: Props) {
-  // Hitung jumlah kemunculan setiap item
   const countMap = data.reduce((acc: Record<string, number>, value) => {
-    const key = value || 'Empty'; // Handle nilai kosong
+    const key = value ?? 'Empty';
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
 
-  // Format data untuk Highcharts
-  const chartData = Object.entries(countMap).map(([name, y]) => ({ name, y }));
+  const chartData = Object.entries(countMap).map(([name, y]) => ({
+    name,
+    y,
+  }));
 
   const options: Highcharts.Options = {
     chart: {
@@ -45,11 +46,11 @@ export default function PieChart({ data }: Props) {
     },
     series: [
       {
+        type: 'pie', // ✔ ini penting
         name: 'Jumlah',
         colorByPoint: true,
         data: chartData,
-        type: 'pie',
-      },
+      } as Highcharts.SeriesPieOptions, // 👈 ini yang menyelesaikan TypeScript error
     ],
   };
 

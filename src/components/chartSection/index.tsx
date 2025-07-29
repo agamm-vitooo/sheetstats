@@ -17,7 +17,13 @@ export default function ChartSection({ headers, rows, defaultCol }: Props) {
   const [selectedCol, setSelectedCol] = useState(defaultCol || headers[0]);
   const [chartType, setChartType] = useState('pie');
 
-  const data = rows.map(row => row[headers.indexOf(selectedCol)]);
+  const selectedIndex = headers.indexOf(selectedCol);
+  
+  // Filter agar hanya data bertipe string | number | null yang dipakai
+  const data = rows.map(row => {
+    const cell = row[selectedIndex];
+    return (typeof cell === 'string' || typeof cell === 'number' || cell === null) ? cell : String(cell);
+  });
 
   return (
     <div className="border p-4 rounded-md shadow bg-white w-full max-w-xl mx-auto">
