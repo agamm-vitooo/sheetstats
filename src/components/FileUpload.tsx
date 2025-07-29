@@ -66,8 +66,6 @@ export default function FileUpload({ onParse }: FileUploadProps) {
 
       {Object.keys(sheets).length > 0 && (
         <div className="mt-6 w-full max-w-sm">
-          <p className="mb-2 text-sm text-gray-700 text-center">Select a sheet to preview:</p>
-          <SheetPicker sheets={sheets} onPick={handlePick} />
         </div>
       )}
     </div>
