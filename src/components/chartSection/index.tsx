@@ -1,13 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import PieChart from './PieChart';
 import BarChart from './BarChart';
 import LineChart from './LineChart';
 import ChartSelector from './ChartSelector';
 import type { SheetData } from '../../types';
-
-import { useMemo } from 'react';
 
 interface Props {
   headers: string[];
@@ -18,45 +16,73 @@ interface Props {
 export default function ChartSection({ headers, rows, defaultCol }: Props) {
   const [selectedCol, setSelectedCol] = useState(defaultCol || headers[0]);
   const [chartType, setChartType] = useState('pie');
+  const [isTotalActive, setIsTotalActive] = useState(false);
 
   const selectedIndex = headers.indexOf(selectedCol);
-  const isIncidentCol = selectedCol.toLowerCase() === 'incident';
 
-// Hitung total hanya jika numeric
-const totalIncident = useMemo(() => {
-  if (!isIncidentCol) return null;
+  // Ambil array isi kolom
+  const rawData = useMemo(() => {
+    return rows.map(row => {
+      const cell = row[selectedIndex];
+      return (typeof cell === 'string' || typeof cell === 'number' || cell === null)
+        ? cell
+        : String(cell);
+    });
+  }, [rows, selectedIndex]);
 
-  return rows.reduce((sum, row) => {
-    const value = row[headers.indexOf(selectedCol)];
-    const number = typeof value === 'number' ? value : parseFloat(value as string);
-    return sum + (isNaN(number) ? 0 : number);
-  }, 0);
-}, [rows, selectedCol, headers]);
-  
-  const data = rows.map(row => {
-    const cell = row[selectedIndex];
-    return (typeof cell === 'string' || typeof cell === 'number' || cell === null) ? cell : String(cell);
-  });
+  // Hitung jumlah data (total count)
+  const totalCount = useMemo(() => {
+    if (!isTotalActive) return null;
+    return rawData.filter(val => val !== null && val !== undefined && val !== '').length;
+  }, [isTotalActive, rawData]);
+
+  // Hitung frekuensi nilai (jika total aktif)
+  const countedData = useMemo(() => {
+    if (!isTotalActive) return null;
+    const freqMap: Record<string, number> = {};
+
+    rawData.forEach(val => {
+      const key = val === null || val === undefined || val === '' ? 'Unknown' : String(val);
+      freqMap[key] = (freqMap[key] || 0) + 1;
+    });
+
+    return Object.entries(freqMap).map(([label, value]) => ({ label, value }));
+  }, [isTotalActive, rawData]);
+
+  // Gunakan countedData jika total aktif, rawData jika tidak
+  const chartData = useMemo(() => {
+    if (isTotalActive && countedData) {
+      return countedData;
+    } else {
+      return rawData;
+    }
+  }, [isTotalActive, countedData, rawData]);
 
   return (
-<div className="border p-2 rounded-md shadow bg-white w-full max-w-xl mx-auto">
-  <ChartSelector
-    headers={headers}
-    selectedCol={selectedCol}
-    chartType={chartType}
-    onColChange={setSelectedCol}
-    onChartTypeChange={setChartType}
-  />
+    <div className="border p-2 rounded-md shadow bg-white w-full max-w-xl mx-auto">
+      <ChartSelector
+        headers={headers}
+        selectedCol={selectedCol}
+        chartType={chartType}
+        onColChange={(col) => {
+          setSelectedCol(col);
+          setIsTotalActive(false); // reset total saat kolom diganti
+        }}
+        onChartTypeChange={setChartType}
+        onTotalClick={() => setIsTotalActive(prev => !prev)}
+        isTotalActive={isTotalActive}
+      />
 
-  {isIncidentCol && (
-    <div className="mb-4 text-sm text-gray-700 font-medium">
-      Total Incident: <span className="font-bold">{totalIncident}</span>
+      {isTotalActive && totalCount !== null && (
+        <div className="mb-4 text-sm text-gray-700 font-medium">
+          Total data di kolom <span className="font-semibold">{selectedCol}</span>:{" "}
+          <span className="font-bold">{totalCount}</span>
+        </div>
+      )}
+
+      {chartType === 'pie' && <PieChart data={chartData} isCounted={isTotalActive} />}
+      {chartType === 'bar' && <BarChart data={chartData} isCounted={isTotalActive} />}
+      {chartType === 'line' && <LineChart data={chartData} isCounted={isTotalActive} />}
     </div>
-  )}
-
-  {chartType === 'pie' && <PieChart data={data} />}
-  {chartType === 'bar' && <BarChart data={data} />}
-  {chartType === 'line' && <LineChart data={data} />}
-</div>
   );
 }

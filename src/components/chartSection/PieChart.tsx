@@ -14,10 +14,7 @@ export default function PieChart({ data }: Props) {
     return acc;
   }, {});
 
-  const chartData = Object.entries(countMap).map(([name, y]) => ({
-    name,
-    y,
-  }));
+  const chartData = Object.entries(countMap).map(([name, y]) => ({ name, y }));
 
   const options: Highcharts.Options = {
     chart: {
@@ -46,11 +43,11 @@ export default function PieChart({ data }: Props) {
     },
     series: [
       {
-        type: 'pie', // ✔ ini penting
+        type: 'pie',
         name: 'Jumlah',
-        colorByPoint: true,
         data: chartData,
-      } as Highcharts.SeriesPieOptions, // 👈 ini yang menyelesaikan TypeScript error
+        colorByPoint: true,
+      } as any, // 👈 untuk menghindari error TS strict
     ],
   };
 

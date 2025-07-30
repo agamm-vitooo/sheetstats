@@ -3,21 +3,32 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
-interface Props {
-  data: (string | number | null)[];
+interface CountedData {
+  label: string;
+  value: number;
 }
 
-export default function BarChart({ data }: Props) {
-  // Hitung jumlah kemunculan setiap item
-  const countMap = data.reduce((acc: Record<string, number>, value) => {
-    const key = value || 'Empty'; // Handle nilai kosong
-    acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {});
+interface Props {
+  data: (string | number | null)[] | CountedData[];
+  isCounted?: boolean;
+}
 
-  // Format untuk X dan Y axis
-  const categories = Object.keys(countMap);
-  const seriesData = Object.values(countMap);
+export default function BarChart({ data, isCounted }: Props) {
+  const counted = isCounted
+    ? (data as CountedData[])
+    : countFrequencies(data as (string | number | null)[]);
+
+  const categories = counted.map(item => item.label);
+  const seriesData = counted.map(item => item.value);
+
+  function countFrequencies(values: (string | number | null)[]) {
+    const countMap = values.reduce((acc: Record<string, number>, value) => {
+      const key = value ?? 'Empty';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(countMap).map(([label, value]) => ({ label, value }));
+  }
 
   const options: Highcharts.Options = {
     chart: {
