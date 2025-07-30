@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import { useDropzone } from 'react-dropzone';
-import SheetPicker from './SheetPicker';
 import type { SheetMap, SheetData } from '../types';
 
 interface FileUploadProps {
@@ -12,12 +11,14 @@ interface FileUploadProps {
 }
 
 export default function FileUpload({ onParse }: FileUploadProps) {
-  const [sheets, setSheets] = useState<SheetMap>({});
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
+
+    setIsLoading(true);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -29,8 +30,8 @@ export default function FileUpload({ onParse }: FileUploadProps) {
         parsed[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1 }) as SheetData;
       });
 
-      setSheets(parsed);
-      onParse?.(parsed); // <-- Kirim hasil parsing ke parent (optional)
+      onParse?.(parsed); // kirim ke parent
+      setIsLoading(false);
     };
 
     reader.readAsArrayBuffer(file);
@@ -44,14 +45,8 @@ export default function FileUpload({ onParse }: FileUploadProps) {
     },
   });
 
-  const handlePick = async (data: SheetData) => {
-    const store = await import('../stores/dataStore');
-    store.useDataStore.getState().setSheets({ SelectedSheet: data });
-    router.push('/charts');
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center px-4 bg-gray-100">
+    <div className="flex flex-col items-center justify-center px-4">
       <div
         {...getRootProps()}
         className="w-full max-w-lg border border-gray-300 bg-white rounded-lg p-8 text-center shadow hover:shadow-md transition"
@@ -64,8 +59,11 @@ export default function FileUpload({ onParse }: FileUploadProps) {
         </p>
       </div>
 
-      {Object.keys(sheets).length > 0 && (
-        <div className="mt-6 w-full max-w-sm">
+      {/* Loader */}
+      {isLoading && (
+        <div className="mt-6 text-gray-600 text-sm flex items-center gap-2">
+          <div className="animate-spin h-5 w-5 border-2 border-t-transparent border-gray-600 rounded-full"></div>
+          <span>Processing file...</span>
         </div>
       )}
     </div>
