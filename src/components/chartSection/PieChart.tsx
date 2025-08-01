@@ -2,19 +2,31 @@
 
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { useMemo } from 'react';
 
 interface Props {
-  data: (string | number | null)[];
+  data: (string | number | null)[] | { label: string; value: number }[];
+  isCounted?: boolean;
 }
 
-export default function PieChart({ data }: Props) {
-  const countMap = data.reduce((acc: Record<string, number>, value) => {
-    const key = value ?? 'Empty';
-    acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {});
-
-  const chartData = Object.entries(countMap).map(([name, y]) => ({ name, y }));
+export default function PieChart({ data, isCounted }: Props) {
+  const chartData = useMemo(() => {
+    if (isCounted) {
+      // Jika sudah dalam bentuk counted
+      return (data as { label: string; value: number }[]).map(({ label, value }) => ({
+        name: label,
+        y: value,
+      }));
+    } else {
+      // Hitung frekuensi dari raw data
+      const countMap = (data as (string | number | null)[]).reduce((acc: Record<string, number>, value) => {
+        const key = value ?? 'Empty';
+        acc[String(key)] = (acc[String(key)] || 0) + 1;
+        return acc;
+      }, {});
+      return Object.entries(countMap).map(([name, y]) => ({ name, y }));
+    }
+  }, [data, isCounted]);
 
   const options: Highcharts.Options = {
     chart: {
@@ -25,11 +37,6 @@ export default function PieChart({ data }: Props) {
     },
     tooltip: {
       pointFormat: '{series.name}: <b>{point.y}</b> ({point.percentage:.1f}%)',
-    },
-    accessibility: {
-      point: {
-        valueSuffix: '%',
-      },
     },
     plotOptions: {
       pie: {
@@ -47,7 +54,7 @@ export default function PieChart({ data }: Props) {
         name: 'Jumlah',
         data: chartData,
         colorByPoint: true,
-      } as any, // 👈 untuk menghindari error TS strict
+      } as any, // tetap bisa dipertahankan
     ],
   };
 
