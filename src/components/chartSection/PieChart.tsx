@@ -3,6 +3,7 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useMemo } from 'react';
+import type { SeriesPieOptions } from 'highcharts';
 
 interface Props {
   data: (string | number | null)[] | { label: string; value: number }[];
@@ -12,13 +13,11 @@ interface Props {
 export default function PieChart({ data, isCounted }: Props) {
   const chartData = useMemo(() => {
     if (isCounted) {
-      // Jika sudah dalam bentuk counted
       return (data as { label: string; value: number }[]).map(({ label, value }) => ({
         name: label,
         y: value,
       }));
     } else {
-      // Hitung frekuensi dari raw data
       const countMap = (data as (string | number | null)[]).reduce((acc: Record<string, number>, value) => {
         const key = value ?? 'Empty';
         acc[String(key)] = (acc[String(key)] || 0) + 1;
@@ -42,19 +41,19 @@ export default function PieChart({ data, isCounted }: Props) {
       pie: {
         allowPointSelect: true,
         cursor: 'pointer',
+        colorByPoint: true, // tetap dipakai
         dataLabels: {
           enabled: true,
           format: '<b>{point.name}</b>: {point.percentage:.1f} %',
         },
-      },
+      } as Highcharts.PlotPieOptions, // 👈 type assertion untuk menghindari error TS
     },
     series: [
       {
         type: 'pie',
         name: 'Jumlah',
         data: chartData,
-        colorByPoint: true,
-      } as any, // tetap bisa dipertahankan
+      } as SeriesPieOptions,
     ],
   };
 
