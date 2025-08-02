@@ -18,7 +18,7 @@ export default function ChartSelector({
   isTotalActive,
 }: Props) {
   return (
-    <div className="flex flex-wrap gap-4 mb-6 items-end">
+    <div className="flex flex-wrap gap-4 mb-6 items-end text-gray-700">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Kolom</label>
         <select

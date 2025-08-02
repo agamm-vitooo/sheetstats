@@ -59,14 +59,14 @@ export default function ChartSection({ headers, rows, defaultCol }: Props) {
   }, [isTotalActive, countedData, rawData]);
 
   return (
-    <div className="border p-2 rounded-md shadow bg-white w-full max-w-xl mx-auto">
+    <div className="border p-4 rounded-2xl bg-white w-full max-w-3xl mx-auto shadow-md">
       <ChartSelector
         headers={headers}
         selectedCol={selectedCol}
         chartType={chartType}
         onColChange={(col) => {
           setSelectedCol(col);
-          setIsTotalActive(false); // reset total saat kolom diganti
+          setIsTotalActive(false); 
         }}
         onChartTypeChange={setChartType}
         onTotalClick={() => setIsTotalActive(prev => !prev)}

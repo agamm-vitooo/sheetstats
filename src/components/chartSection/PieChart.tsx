@@ -30,6 +30,7 @@ export default function PieChart({ data, isCounted }: Props) {
   const options: Highcharts.Options = {
     chart: {
       type: 'pie',
+      height: 500,
     },
     title: {
       text: 'Distribusi Data',
@@ -46,7 +47,7 @@ export default function PieChart({ data, isCounted }: Props) {
           enabled: true,
           format: '<b>{point.name}</b>: {point.percentage:.1f} %',
         },
-      } as Highcharts.PlotPieOptions, // 👈 type assertion untuk menghindari error TS
+      } as Highcharts.PlotPieOptions, 
     },
     series: [
       {
