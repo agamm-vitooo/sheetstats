@@ -11,6 +11,7 @@ interface Props {
   headers: string[];
   rows: SheetData;
   defaultCol?: string;
+  height?: string;
 }
 
 export default function ChartSection({ headers, rows, defaultCol }: Props) {
@@ -59,7 +60,7 @@ export default function ChartSection({ headers, rows, defaultCol }: Props) {
   }, [isTotalActive, countedData, rawData]);
 
   return (
-    <div className="border p-4 rounded-2xl bg-white w-full max-w-3xl mx-auto shadow-md">
+    <div className="border p-4 rounded-2xl bg-white w-full max-w-3xl mx-auto">
       <ChartSelector
         headers={headers}
         selectedCol={selectedCol}

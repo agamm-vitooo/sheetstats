@@ -51,8 +51,8 @@ export default function ChartSelector({
         <button
           onClick={onTotalClick}
           className={`px-4 py-2 rounded-md text-white ${
-            isTotalActive ? 'bg-blue-600' : 'bg-gray-500'
-          } hover:bg-blue-700 transition`}
+            isTotalActive ? 'bg-blue-950' : 'bg-blue-800'
+          } hover:bg-blue-950 transition`}
         >
           Total
         </button>
